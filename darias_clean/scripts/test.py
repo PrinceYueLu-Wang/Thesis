@@ -8,9 +8,11 @@ sys.path.append(rootlib)
 from Darias.kinematic import Kinematic
 from Darias.controller import ControllSpeed_eef
 from Darias.utils import DistHomoMatrix
+from Darias.utils import PlotData
 
 import numpy as np
 from copy import deepcopy
+from time import time,sleep
 
 class simualtion():
 
@@ -29,8 +31,12 @@ class simualtion():
 
         self.enable_pybullet=False
 
+        self.eps=1e-4
+
         self.iteration_success=False
         self.iteration_max=1000
+
+        self.plot_data=PlotData()
 
     def SimulationStep(self,q,iteration=1):
 
@@ -59,39 +65,43 @@ class simualtion():
 
         q=deepcopy(self.robot.q_init)
         
-        for i in range(0,self.iteration_max):
+        for iter in range(0,self.iteration_max):
 
             x=self.robot.GetJointState(self.jointidx_eef)
+            v=self.robot.VelocityWorld_eef()
 
-            err=DistHomoMatrix(x,self.T_target_world)
-
-            print("{:*^30}".format('err'))
-            print(err)
-
-            # print("{:*^30}".format('x'))
-            # print(x)
-
-            dx=ControllSpeed_eef(self.T_target_world,x)
-
-            # print("{:*^30}".format('dx'))
-            # print(dx)
-
-
-            dq=np.matmul(self.robot.JacobWorldInv_eef(),dx)
-
-            # print("{:*^30}".format('dq'))
-            # print(dq)
-
+            v_des=ControllSpeed_eef(self.T_target_world,x)
+            
+            dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
 
             q=q+dq*self.dt
 
             self.SimulationStep(q)
+            self.plot_data.DataUpdate(
+                q=q,dq=dq,
+                ddq=None,
+                x_EEF_world=x,
+                v_EEF_world=v,
+                time=iter*self.dt)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                break
 
 def main():
 
     sim=simualtion()
 
     sim.StartSim()
+
+    sim.plot_data.plot_x_EEF_world()
+
+
 
     
 

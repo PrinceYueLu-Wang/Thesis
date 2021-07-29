@@ -146,9 +146,4 @@ class Kinematic():
 
 
 if __name__ == "__main__":
-    robot=EnvSingleArm()
-    robot.ModelInit()
-    b=robot.JacobWorld(5)
-    print(robot.JacobWorld(5))
-
-
+    pass
