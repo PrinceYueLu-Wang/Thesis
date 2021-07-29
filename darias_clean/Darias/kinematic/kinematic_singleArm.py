@@ -1,14 +1,24 @@
 import os
 import pinocchio as pin
 import numpy as np
+from copy import deepcopy
 
 
-class EnvSingleArm():
+
+class Kinematic():
 
     def __init__(self):
 
         self.UrdfLoading()
+
         self.JointInfoConfig()
+
+        self.parameterConfig()
+
+        self.ModelInit()
+
+    def parameterConfig(self):
+        self.DAMP=1e-4
 
     def UrdfLoading(self):
 
@@ -38,20 +48,22 @@ class EnvSingleArm():
         self.jointDict_pin2frame=dict((pin,frame) for pin,frame in zip(self.jointIdx_pinocchio,self.frameIdx_pinocchio))
 
     def ModelInit(self,*args):
-        if args is None:
-            q=pin.randomConfiguration()
+        if not args:
+            q=pin.randomConfiguration(self.model)
+
+            self.q_init=deepcopy(q)
+
             self.KinUpdate(q)
         else :
-            self.Kinupdate(args)
-        
+            self.q_init=deepcopy(q)
 
+            self.KinUpdate(args)
+        
     def GetFrameId(self,joint_idx):
 
-        return self.jointDict_pin2frame(joint_idx)
+        return self.jointDict_pin2frame[joint_idx]
 
     def JacobWorld(self,joint_idx):
-
-        frame_idx=self.jointDict_pin2frame(joint_idx)
 
         return  pin.getFrameJacobian(
                   self.model,
@@ -66,6 +78,27 @@ class EnvSingleArm():
                   self.data,
                   self.frameid_eef,
                   pin.ReferenceFrame.WORLD)
+
+    def JacobWorldInv_eef(self):
+
+        J=self.JacobWorld_eef()
+
+        return np.matmul(J.T,
+             np.linalg.inv(
+             np.matmul(J,J.T)
+            +self.DAMP*np.eye(6)) )
+
+    def JacobWorldInv(self,joint_idx):
+
+        J=self.JacobWorld(joint_idx)
+
+        return np.matmul(
+               J.T,
+               np.linalg.inv(
+                  np.matmul(J,J.T)
+                  +self.DAMP*np.eye(6)
+                  ) 
+               )
 
     def VelocityWorld(self,joint_idx):
 
@@ -100,6 +133,8 @@ class EnvSingleArm():
             homoMatrix[0:3,0:3]=rot
             homoMatrix[0:3,-1]=trans
 
+            return homoMatrix
+
         elif return_type == "translation":
 
             return trans
@@ -110,8 +145,10 @@ class EnvSingleArm():
 
 
 
+if __name__ == "__main__":
+    robot=EnvSingleArm()
+    robot.ModelInit()
+    b=robot.JacobWorld(5)
+    print(robot.JacobWorld(5))
 
 
-
-if __name__ == '__main__':
-    a=EnvSingleArm()

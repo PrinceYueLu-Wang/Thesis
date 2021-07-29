@@ -231,8 +231,7 @@ class darias():
 
     def accelerationControl(self,target,state,velocity):
         '''
-            target 4x4 homo Trans Matrix in format torch.4x4
-
+3
             state 4x4 homo trans matrix in format torch.4x4
 
             velocity 6x1 matrix motion in format torch.6x1
