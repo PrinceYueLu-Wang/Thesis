@@ -296,7 +296,7 @@ class darias():
 
         T_obj2target=np.matmul(np.linalg.inv(T_target2world),T_obj2world)
 
-        Xe = SE3.from_matrix(T_obj2target, normalize=True) 
+        Xe = SESE33.from_matrix(T_obj2target, normalize=True) 
 
         xtl = Xe.log()  
         vtl = -xtl
