@@ -31,7 +31,7 @@ class simualtion():
 
         self.enable_pybullet=False
 
-        self.eps=1e-4
+        self.eps=1e-3
 
         self.iteration_success=False
         self.iteration_max=1000
@@ -99,7 +99,8 @@ def main():
 
     sim.StartSim()
 
-    sim.plot_data.plot_x_EEF_world()
+    # sim.plot_data.plot_x_EEF_world()
+    sim.plot_data.Plot_dq()
 
 
 

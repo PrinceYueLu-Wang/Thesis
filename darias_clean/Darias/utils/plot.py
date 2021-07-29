@@ -20,7 +20,7 @@ class PlotData():
         self.v_EEF_world.append(v_EEF_world)
         self.time.append(time)
 
-    def plot_q(self,allJoints=False):
+    def Plot_q(self,allJoints=False):
 
         fig = plt.figure(1)
 
@@ -37,7 +37,7 @@ class PlotData():
                 plt.plot(self.time,temp_q[i])
             plt.show()
 
-    def plot_dq(self,allJoints=False):
+    def Plot_dq(self,allJoints=False):
 
         fig = plt.figure(1)
 
@@ -54,7 +54,7 @@ class PlotData():
                 plt.plot(self.time,temp_dq[i])
             plt.show()
 
-    def plot_x_EEF_world(self):
+    def Plot_x_EEF_world(self):
         
         fig = plt.figure(1)
         ax = plt.axes(projection='3d')
@@ -83,7 +83,7 @@ class PlotData():
 
         plt.show()
 
-    def plot_ddq(self,allJoints=False):
+    def Plot_ddq(self,allJoints=False):
 
         fig = plt.figure(1)
 
@@ -102,5 +102,5 @@ class PlotData():
                 plt.plot(self.time,temp_ddq[i])
             plt.show()
 
-    def Show(self,q=None,dq=None,ddq=None,plot_x_EEF_world=None):
+    def Show(self,q=None,dq=None,ddq=None,x_EEF_world=None):
         pass
