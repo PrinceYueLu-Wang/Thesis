@@ -1,0 +1,65 @@
+pybullet
+---------------------------------
+name 0 ,idx b'fixed'
+name 1 ,idx b'darias_R_base'
+name 2 ,idx b'R_SFE'
+name 3 ,idx b'R_SAA'
+name 4 ,idx b'R_HR'
+name 5 ,idx b'R_EB'
+name 6 ,idx b'R_WR'
+name 7 ,idx b'R_WFE'
+name 8 ,idx b'R_WAA'
+name 9 ,idx b'R_mount'
+name 10 ,idx b'R_SMS'
+name 11 ,idx b'R_SMP'
+name 12 ,idx b'R_SMD'
+name 13 ,idx b'R_RIS'
+name 14 ,idx b'R_RIP'
+name 15 ,idx b'R_RID'
+name 16 ,idx b'R_MIS'
+name 17 ,idx b'R_MIP'
+name 18 ,idx b'R_MID'
+name 19 ,idx b'R_INS'
+name 20 ,idx b'R_INP'
+name 21 ,idx b'R_IND'
+name 22 ,idx b'R_THS'
+name 23 ,idx b'R_THP'
+name 24 ,idx b'R_THD'
+name 25 ,idx b'darias_L_base'
+name 26 ,idx b'L_SFE'
+name 27 ,idx b'L_SAA'
+name 28 ,idx b'L_HR'
+name 29 ,idx b'L_EB'
+name 30 ,idx b'L_WR'
+name 31 ,idx b'L_WFE'
+name 32 ,idx b'L_WAA'
+name 33 ,idx b'L_mount'
+name 34 ,idx b'L_SMS'
+name 35 ,idx b'L_SMP'
+name 36 ,idx b'L_SMD'
+name 37 ,idx b'L_RIS'
+name 38 ,idx b'L_RIP'
+name 39 ,idx b'L_RID'
+name 40 ,idx b'L_MIS'
+name 41 ,idx b'L_MIP'
+name 42 ,idx b'L_MID'
+
+-----
+pinocchio               pybullet   pinocchio frame id
+name 0 : index universe  xxx           --
+name 1 : index L_SFE     26     L_SFE has  framesname 7
+name 2 : index L_SAA    27      L_SAA has  framesname 9
+name 3 : index L_HR     28      L_HR has  framesname 11
+name 4 : index L_EB     29      L_EB has  framesname 13
+name 5 : index L_WR     30      L_EB has  framesname 13
+name 6 : index L_WFE    31     L_WFE has  framesname 17
+name 7 : index L_WAA    32     L_WAA has  framesname 19
+ 
+
+L_SFE has  framesname 7
+L_SFE has  framesname 9
+L_HR has  framesname 11
+L_EB has  framesname 13
+L_EB has  framesname 13
+L_WFE has  framesname 17
+L_WAA has  framesname 19

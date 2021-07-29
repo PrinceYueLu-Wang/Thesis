@@ -1,0 +1,152 @@
+digraph G {
+node [shape=box];
+"world" [label="world"];
+"darias" [label="darias"];
+"calib_L_base_link" [label="calib_L_base_link"];
+"L_1_link" [label="L_1_link"];
+"L_2_link" [label="L_2_link"];
+"L_3_link" [label="L_3_link"];
+"L_4_link" [label="L_4_link"];
+"L_5_link" [label="L_5_link"];
+"L_6_link" [label="L_6_link"];
+"left_endeffector_link" [label="left_endeffector_link"];
+"L_palm" [label="L_palm"];
+"L_INS_link" [label="L_INS_link"];
+"L_INP_link" [label="L_INP_link"];
+"L_IND_link" [label="L_IND_link"];
+"L_MIS_link" [label="L_MIS_link"];
+"L_MIP_link" [label="L_MIP_link"];
+"L_MID_link" [label="L_MID_link"];
+"L_RIS_link" [label="L_RIS_link"];
+"L_RIP_link" [label="L_RIP_link"];
+"L_RID_link" [label="L_RID_link"];
+"L_SMS_link" [label="L_SMS_link"];
+"L_SMP_link" [label="L_SMP_link"];
+"L_SMD_link" [label="L_SMD_link"];
+"L_THS_link" [label="L_THS_link"];
+"L_THP_link" [label="L_THP_link"];
+"L_THD_link" [label="L_THD_link"];
+"calib_R_base_link" [label="calib_R_base_link"];
+"R_1_link" [label="R_1_link"];
+"R_2_link" [label="R_2_link"];
+"R_3_link" [label="R_3_link"];
+"R_4_link" [label="R_4_link"];
+"R_5_link" [label="R_5_link"];
+"R_6_link" [label="R_6_link"];
+"right_endeffector_link" [label="right_endeffector_link"];
+"R_palm" [label="R_palm"];
+"R_INS_link" [label="R_INS_link"];
+"R_INP_link" [label="R_INP_link"];
+"R_IND_link" [label="R_IND_link"];
+"R_MIS_link" [label="R_MIS_link"];
+"R_MIP_link" [label="R_MIP_link"];
+"R_MID_link" [label="R_MID_link"];
+"R_RIS_link" [label="R_RIS_link"];
+"R_RIP_link" [label="R_RIP_link"];
+"R_RID_link" [label="R_RID_link"];
+"R_SMS_link" [label="R_SMS_link"];
+"R_SMP_link" [label="R_SMP_link"];
+"R_SMD_link" [label="R_SMD_link"];
+"R_THS_link" [label="R_THS_link"];
+"R_THP_link" [label="R_THP_link"];
+"R_THD_link" [label="R_THD_link"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"world" -> "fixed" [label="xyz: 0 0 1.307 \nrpy: 0 -0 0"]
+"fixed" -> "darias"
+"darias" -> "darias_L_base" [label="xyz: -0.11 0.06 0.193 \nrpy: 0 1.5708 1.0472"]
+"darias_L_base" -> "calib_L_base_link"
+"calib_L_base_link" -> "L_SFE" [label="xyz: 0 0 0.11 \nrpy: 0 -0 0"]
+"L_SFE" -> "L_1_link"
+"L_1_link" -> "L_SAA" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"L_SAA" -> "L_2_link"
+"L_2_link" -> "L_HR" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"L_HR" -> "L_3_link"
+"L_3_link" -> "L_EB" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"L_EB" -> "L_4_link"
+"L_4_link" -> "L_WR" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"L_WR" -> "L_5_link"
+"L_5_link" -> "L_WFE" [label="xyz: 0 0 0.19 \nrpy: 0 -0 0"]
+"L_WFE" -> "L_6_link"
+"L_6_link" -> "L_WAA" [label="xyz: 0 0 0.078 \nrpy: 0 -0 0"]
+"L_WAA" -> "left_endeffector_link"
+"left_endeffector_link" -> "L_mount" [label="xyz: 0 0 0 \nrpy: 0 0 -1.57"]
+"L_mount" -> "L_palm"
+"L_palm" -> "L_INS" [label="xyz: -0.00252988 -0.0368001 0.108744 \nrpy: 1.5708 -1.53649 1.5708"]
+"L_INS" -> "L_INS_link"
+"L_INS_link" -> "L_INP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"L_INP" -> "L_INP_link"
+"L_INP_link" -> "L_IND" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"L_IND" -> "L_IND_link"
+"L_palm" -> "L_MIS" [label="xyz: -0.0037 -0.01 0.119 \nrpy: 1.5708 -1.53649 1.5708"]
+"L_MIS" -> "L_MIS_link"
+"L_MIS_link" -> "L_MIP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"L_MIP" -> "L_MIP_link"
+"L_MIP_link" -> "L_MID" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"L_MID" -> "L_MID_link"
+"L_palm" -> "L_RIS" [label="xyz: -0.00252988 0.0168001 0.114044 \nrpy: 1.5708 -1.53649 1.5708"]
+"L_RIS" -> "L_RIS_link"
+"L_RIS_link" -> "L_RIP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"L_RIP" -> "L_RIP_link"
+"L_RIP_link" -> "L_RID" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"L_RID" -> "L_RID_link"
+"L_palm" -> "L_SMS" [label="xyz: 0.000971571 0.0433963 0.0950435 \nrpy: 1.5708 -1.53649 1.5708"]
+"L_SMS" -> "L_SMS_link"
+"L_SMS_link" -> "L_SMP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"L_SMP" -> "L_SMP_link"
+"L_SMP_link" -> "L_SMD" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"L_SMD" -> "L_SMD_link"
+"L_palm" -> "L_THS" [label="xyz: 0.0625691 -0.0445445 0.0800446 \nrpy: 9.67802e-17 -0.959927 -0.60796"]
+"L_THS" -> "L_THS_link"
+"L_THS_link" -> "L_THP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"L_THP" -> "L_THP_link"
+"L_THP_link" -> "L_THD" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"L_THD" -> "L_THD_link"
+"darias" -> "darias_R_base" [label="xyz: -0.11 -0.06 0.193 \nrpy: 0 -1.5708 2.0944"]
+"darias_R_base" -> "calib_R_base_link"
+"calib_R_base_link" -> "R_SFE" [label="xyz: 0 0 0.11 \nrpy: 0 -0 0"]
+"R_SFE" -> "R_1_link"
+"R_1_link" -> "R_SAA" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"R_SAA" -> "R_2_link"
+"R_2_link" -> "R_HR" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"R_HR" -> "R_3_link"
+"R_3_link" -> "R_EB" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"R_EB" -> "R_4_link"
+"R_4_link" -> "R_WR" [label="xyz: 0 0 0.2 \nrpy: 0 -0 0"]
+"R_WR" -> "R_5_link"
+"R_5_link" -> "R_WFE" [label="xyz: 0 0 0.19 \nrpy: 0 -0 0"]
+"R_WFE" -> "R_6_link"
+"R_6_link" -> "R_WAA" [label="xyz: 0 0 0.078 \nrpy: 0 -0 0"]
+"R_WAA" -> "right_endeffector_link"
+"right_endeffector_link" -> "R_mount" [label="xyz: 0 0 0 \nrpy: 0 0 -1.57"]
+"R_mount" -> "R_palm"
+"R_palm" -> "R_INS" [label="xyz: -0.00252988 0.0368001 0.108744 \nrpy: 1.5708 -1.53649 1.5708"]
+"R_INS" -> "R_INS_link"
+"R_INS_link" -> "R_INP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"R_INP" -> "R_INP_link"
+"R_INP_link" -> "R_IND" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"R_IND" -> "R_IND_link"
+"R_palm" -> "R_MIS" [label="xyz: -0.00252988 0.00980013 0.116744 \nrpy: 1.5708 -1.53649 1.5708"]
+"R_MIS" -> "R_MIS_link"
+"R_MIS_link" -> "R_MIP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"R_MIP" -> "R_MIP_link"
+"R_MIP_link" -> "R_MID" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"R_MID" -> "R_MID_link"
+"R_palm" -> "R_RIS" [label="xyz: -0.00252988 -0.0168001 0.114044 \nrpy: 1.5708 -1.53649 1.5708"]
+"R_RIS" -> "R_RIS_link"
+"R_RIS_link" -> "R_RIP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"R_RIP" -> "R_RIP_link"
+"R_RIP_link" -> "R_RID" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"R_RID" -> "R_RID_link"
+"R_palm" -> "R_SMS" [label="xyz: 0.000971571 -0.0433963 0.0950435 \nrpy: 1.5708 -1.53649 1.5708"]
+"R_SMS" -> "R_SMS_link"
+"R_SMS_link" -> "R_SMP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"R_SMP" -> "R_SMP_link"
+"R_SMP_link" -> "R_SMD" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"R_SMD" -> "R_SMD_link"
+"R_palm" -> "R_THS" [label="xyz: 0.0625691 0.0445445 0.0800446 \nrpy: -9.67802e-17 -0.959927 0.60796"]
+"R_THS" -> "R_THS_link"
+"R_THS_link" -> "R_THP" [label="xyz: 0 0 0 \nrpy: 1.5708 -0 0"]
+"R_THP" -> "R_THP_link"
+"R_THP_link" -> "R_THD" [label="xyz: 0.055 0 0 \nrpy: 0 -0 0"]
+"R_THD" -> "R_THD_link"
+}
