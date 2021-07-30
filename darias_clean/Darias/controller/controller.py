@@ -18,6 +18,19 @@ def ControllSpeed_eef(T_target,T_body):
     
     return ve_world
 
+def LineContSpeed_eef(T_target,T_body):
+    
+    vector1=T_target[0:3,-1]
+    vector2=T_body[0:3,-1]
+
+    v =vector1-vector2
+    v_sclar=np.linalg.norm(v)
+    v_unit=v/v_sclar
+
+    v_unit=np.concatenate((v_unit,np.array([0.,0.,0.])))
+
+    return v_unit
+
 
 
 

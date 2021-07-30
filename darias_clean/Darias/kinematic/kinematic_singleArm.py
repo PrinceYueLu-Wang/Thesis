@@ -143,7 +143,8 @@ class Kinematic():
 
             return rot
 
-
+    def NeutralJointState(self):
+        return pin.neutral(self.model)
 
 if __name__ == "__main__":
     pass

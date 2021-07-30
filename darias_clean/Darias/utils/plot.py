@@ -74,9 +74,9 @@ class PlotData():
         # ax.plot3D(data_x, data_y, data_z, 'red')
 
         ax.scatter3D(
-            data_x[::10]    ,
-            data_y[::10]    , 
-            data_z[::10]    , 
+            data_x[::1]    ,
+            data_y[::1]    , 
+            data_z[::1]    , 
             # c=self.time[::10]  , 
             # cmap='Reds'
             )
