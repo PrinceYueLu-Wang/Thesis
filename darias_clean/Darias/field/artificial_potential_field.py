@@ -231,7 +231,7 @@ if __name__ == '__main__':
     for item in obs:
         
         u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-        radius=1.0
+        radius=1.5
         x = np.cos(u)*np.sin(v) * radius + item[0]
         y = np.sin(u)*np.sin(v) * radius + item[1]
         z = np.cos(v) * radius + item[2] 

@@ -199,7 +199,7 @@ class darias():
       
     def startSimulation(self):
 
-        self.enalbe_animation=False
+        self.enalbe_animation=True
         if self.enalbe_animation:
             self.pybulletInit()
 
