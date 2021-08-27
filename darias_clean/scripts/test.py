@@ -9,8 +9,12 @@ from Darias.kinematic import Kinematic
 from Darias.controller import ControllSpeed_eef,LineContSpeed_eef
 from Darias.utils import DistHomoMatrix
 from Darias.utils import PlotData
+from Darias.envs import PyEnv
+from Darias.field import Vector3d,apf
 
 import numpy as np
+import quaternion
+
 from copy import deepcopy
 from time import time,sleep
 
@@ -20,32 +24,62 @@ class simualtion():
 
     def __init__(self):
 
-        self.robot=Kinematic()
-
         self.ParameterConfig()
 
-        self.InitTarget([0.4,0.4,1.6])
+        self.robot=Kinematic()
+
+        self.FieldInit()
+
+        if self.enable_pybullet:
+            self.bullet=PyEnv()            
+
+        # self.InitTarget([0.3,0,1.6])
+
+        # self.InitTarget([0.73183, 0.2339, 1.4109],
+        #                 [0.20901,0.68476,-0.22178,0.66199]
+        #                 )
+
+        # self.InitTarget([0.75579,  -0.12606,   1.296],
+        #                 [0.21194,   0.7567,  -0.18032,  0.59158]
+        #                 )
+
+        self.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
 
     def ParameterConfig(self):
 
         self.jointidx_eef=7
         self.dt=0.01
 
-        self.enable_pybullet=False
+        self.enable_pybullet=True
+        # self.enable_pybullet=
 
-        self.eps=1e-3
+
+        self.eps=3*1e-3
 
         self.iteration_success=False
-        self.iteration_max=2000
+        self.iteration_max=10000
+
+        self.iter=0
 
         self.plot_data=PlotData()
 
-    def SimulationStep(self,q,iteration=1):
+    def SimulationStep(self,q):
 
+        # Pinocchio update  
+        #======================================================#
         self.robot.KinUpdate(q)
+        
+        #Field update
+        #======================================================#
+        
 
-        if (iteration % 20 == 0) and self.enable_pybullet:
-            pass
+
+        #Pybullet update
+        #======================================================#
+        self.iter+=1
+
+        if (self.iter % 2 == 0) and self.enable_pybullet:
+            self.bullet.BulletUpdate(q)
 
     def InitTarget(self,*args):
 
@@ -72,25 +106,62 @@ class simualtion():
         
         elif len(args) == 2:
 
-            rot = np.array(args[0])
-            translation=np.array(args[1])
+            quater=args[1]
+            translation=np.array(args[0])
+
+            quat=np.quaternion(quater[3],quater[0],quater[1],quater[2])
+            
+            rot_mat=quaternion.as_rotation_matrix(quat)
 
             T=np.eye(4)
-            T[0:3,0:3]=rot
+            T[0:3,0:3]=rot_mat
             T[0:3,-1]=translation
 
             self.T_target_world=T
 
-    def KinematicInv(self,trans_target):  
+    def HomoFromRotTrans(self,args):
+
+        quater=args[1]
+        translation=np.array(args[0])
+
+        quat=np.quaternion(quater[3],quater[0],quater[1],quater[2])
+        rot_mat=quaternion.as_rotation_matrix(quat)
+
+        T=np.eye(4)
+        T[0:3,0:3]=rot_mat
+        T[0:3,-1]=translation
+        
+        return T
+
+    def KinematicInv(self,trans_target,quater=False):  
+
+        # quater -> x,y,z,w
 
         robot_inv=Kinematic()
 
-        q=robot_inv.NeutralJointState()
+        # q_inv_init=robot_inv.NeutralJointState()
+        # q=deepcopy(q_inv_init)
+
+        q=deepcopy(robot_inv.q_init)
 
         iteration_success=False
 
-        T_target_world=np.eye(4)
-        T_target_world[0:3,-1]=trans_target
+
+        if not quater :
+            T_target_world=np.eye(4)
+            T_target_world[0:3,-1]=trans_target
+
+        else:
+
+            T_target_world=np.eye(4)
+            quat=np.quaternion(quater[3],quater[0],quater[1],quater[2])
+            #here input w,x,y,z
+            
+            rot_mat=quaternion.as_rotation_matrix(quat)
+
+            T_target_world[0:3,0:3]=rot_mat
+            T_target_world[0:3,-1]=trans_target
+            
 
         for iter in range(0,self.iteration_max):
 
@@ -105,25 +176,52 @@ class simualtion():
 
             robot_inv.KinUpdate(q)
 
-            err=DistHomoMatrix(x,self.T_target_world)
+            err=DistHomoMatrix(x,T_target_world)
 
-            if err < self.eps:
+            if err < 0.3*1e-3:
                 iteration_success=True
                 break
 
-            err=DistHomoMatrix(x,self.T_target_world)
-            # if iter % 100 == 0:
-            #     # print("{:*^30}".format('err'))
-            #     print("No. {} with error {}:".format(iter,err))
-        
-        # if iteration_success:
-        #     # print("{:*^30}".format('q'))
-        #     # print(q)
-        #     return x
-        # else:
-        #     return -1
+            if iter % 100 == 0:
+                print("No. {} with error {}:".format(iter,err))
+                print("x : {}".format(x[0:3,-1]))
 
         return iteration_success
+
+    def FieldInit(self):
+        #only eef with att
+        #==================================================#
+        
+        self.FieldList=[apf() for x in np.arange(0,6)]
+
+        self.FieldList.append(apf(enableAttractive=True))
+
+        #==================================================#
+
+        # # joint No. 0  - No.6 without Attractive
+        
+        # self.FieldList=[apf() for x in np.arange(0,7)]
+
+    def ForceFromField(self):
+
+        statelist=self.robot.JointStateListUpdate()
+
+        # every column is for one joint
+        ddq_joint=np.zeros(shape=(7,7))
+
+        for idx in np.arange(0,7):
+
+            f = self.FieldList[idx].ForceUpdate(statelist[idx])
+
+            joint_idx=idx+1
+
+            J_inv = self.robot.JacobWorldInv(joint_idx)
+
+            ddq_joint[:,idx]=np.matmul(J_inv,f)
+
+        ddq=ddq_joint.sum(axis=1)
+
+        return ddq
 
     def StartSim(self):
 
@@ -135,11 +233,49 @@ class simualtion():
             v=self.robot.VelocityWorld_eef()
 
             v_des=ControllSpeed_eef(self.T_target_world,x)
-            v_des=LineContSpeed_eef(self.T_target_world,x)
+            # v_des=LineContSpeed_eef(self.T_target_world,x)
             
             dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
 
             q=q+dq*self.dt
+
+            self.SimulationStep(q)
+            self.plot_data.DataUpdate(
+                q=q,dq=dq,
+                ddq=None,
+                x_EEF_world=x,
+                v_EEF_world=v,
+                time=iter*self.dt)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                break
+    
+    def StartSimAPF(self):
+
+        q=deepcopy(self.robot.q_init)
+        dq=np.zeros((7,))
+        
+        for iter in range(0,self.iteration_max):
+
+            x=self.robot.GetJointState(self.jointidx_eef)
+            v=self.robot.VelocityWorld_eef()
+
+            # ddq=self.ForceFromField()
+
+            # dq=dq+self.dt*ddq
+            # q=q+dq*self.dt
+
+            dq=self.ForceFromField()
+
+            # q=q+dq*self.dt
+            q=q+dq*0.02
 
             self.SimulationStep(q)
             self.plot_data.DataUpdate(
@@ -158,40 +294,84 @@ class simualtion():
                 self.iteration_success=True
                 break
 
+    def StartSimDualshock(self):
+
+        q=deepcopy(self.robot.q_init)
+        
+        for iter in range(0,self.iteration_max):
+
+            x=self.robot.GetJointState(self.jointidx_eef)
+            v=self.robot.VelocityWorld_eef()
+
+            v_des=ControllSpeed_eef(self.T_target_world,x)
+            # v_des=LineContSpeed_eef(self.T_target_world,x)
+            
+            dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+
+            q=q+dq*self.dt
+
+            self.SimulationStep(q)
+            self.plot_data.DataUpdate(
+                q=q,dq=dq,
+                ddq=None,
+                x_EEF_world=x,
+                v_EEF_world=v,
+                time=iter*self.dt)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                break
+
+
 def main():
 
     sim=simualtion()
 
+
+    #======================================================#
+    # sim.StartSimAPF()
+
+
+    #======================================================#
     sim.StartSim()
-    # print(sim.KinematicInv([0.3,0.0,1.4]))
-    sim.plot_data.Plot_x_EEF_world()
-    # sim.plot_data.Plot_q()
 
-    # range_list=[]
+    # a=sim.robot.GetJointState(sim.jointidx_eef)
+    # field=apf(True)
+    # field.ForceUpdate(a)
 
-    # progressbar1=tqdm(total=10,leave=False,desc="Loop1",position=1)
-    # progressbar2=tqdm(total=10,leave=True,desc="Loop2",position=2)
-
-    # for x in np.arange(0.0,1.0,0.1):
-    #     for z in np.arange(1.0,2.0,0.1):
-
-    #         flag=sim.KinematicInv([x,0.0,z])
-
-    #         if flag:
-    #             range_list.append([x,z])
-
-    #         progressbar2.update(1)
-
-    #     progressbar2.reset()
-    #     progressbar1.update(1)
-
-    # progressbar1.close()
-    # progressbar2.close()
-
-
-
-    # for item in range_list:
-    #     print("x : {} , z : {}".format(item[0],item[1]))
+    #======================================================#
+    # print(sim.KinematicInv(
+    #     trans_target=[0.73183, 0.2339, 1.4109],
+    #     quater=[0.20901,0.68476,-0.22178,0.66199]
+    #     ))
+    #======================================================#
+    # possible pose 3 
+    # print(sim.KinematicInv(
+    #     trans_target=[0.75579,  -0.12606,   1.296],
+    #     quater=[0.21194,   0.7567,  -0.18032,  0.59158]
+    #     ))  
+    #======================================================#
+    # possible pose 4 
+    # print(sim.KinematicInv(
+    #     trans_target=[0.75579,  0.1,   1.296],
+    #     quater=[0, 0.7071068,  0+0.1,  0.7071068]
+    #     ))  
+     #======================================================#
+    # sim.StartSim()
+    # print(sim.KinematicInv([0.3,0.1,1.5]))
+    # for x in np.linspace(0,0.5,10):
+    #     for y in np.linspace(0.2,0.2,1):
+    #         for z in np.linspace(1.3,1.6,10):
+    #             flag=str(sim.KinematicInv([x,y,z]) )
+    #             print("x={},y={},z={},res={}".format(x,y,z,flag))
+    # sim.plot_data.Plot_x_EEF_world()
+     #======================================================#
 
 
 if __name__ == '__main__':
