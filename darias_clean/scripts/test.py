@@ -1,6 +1,9 @@
 import sys
 import os
 
+import pygame
+
+
 dir=os.path.dirname(__file__)
 rootlib=os.path.abspath(os.path.join(dir,'..'))
 sys.path.append(rootlib)
@@ -19,6 +22,7 @@ from copy import deepcopy
 from time import time,sleep
 
 from tqdm import tqdm
+
 
 class simualtion():
 
@@ -43,21 +47,20 @@ class simualtion():
         #                 [0.21194,   0.7567,  -0.18032,  0.59158]
         #                 )
 
-        self.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
+        # self.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
 
     def ParameterConfig(self):
 
         self.jointidx_eef=7
-        self.dt=0.01
+        self.dt=0.1
 
+        # self.enable_pybullet=True
         self.enable_pybullet=True
-        # self.enable_pybullet=
-
 
         self.eps=3*1e-3
 
         self.iteration_success=False
-        self.iteration_max=10000
+        self.iteration_max=1000
 
         self.iter=0
 
@@ -118,6 +121,23 @@ class simualtion():
             T[0:3,-1]=translation
 
             self.T_target_world=T
+
+    def TargetFromQuanTrans(self,*args):
+
+        quater=args[1]
+        translation=np.array(args[0])
+
+        quat=np.quaternion(quater[3],quater[0],quater[1],quater[2])
+        
+        rot_mat=quaternion.as_rotation_matrix(quat)
+
+        T=np.eye(4)
+        T[0:3,0:3]=rot_mat
+        T[0:3,-1]=translation
+
+        # self.T_target_world=T
+
+        return T
 
     def HomoFromRotTrans(self,args):
 
@@ -223,6 +243,108 @@ class simualtion():
 
         return ddq
 
+    def MoveToTarget(self,q_previous,trans,rot):
+
+        # self.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
+        self.InitTarget(trans,rot)
+
+        q=deepcopy(q_previous)
+        
+        for iter in range(0,self.iteration_max):
+
+            x=self.robot.GetJointState(self.jointidx_eef)
+            v=self.robot.VelocityWorld_eef()
+
+            v_des=ControllSpeed_eef(self.T_target_world,x)
+            # v_des=LineContSpeed_eef(self.T_target_world,x)
+            
+            dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+
+            q=q+dq*self.dt
+
+            self.SimulationStep(q)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                print("*********************")
+                print("task successed!")
+
+                return q
+                break
+        
+        if err > self.eps:
+            print("*********************")
+            print("task failed!")
+
+        return q
+    
+    def MoveToTargetJoy(self,q_previous,command):
+
+        print(command)
+
+        q=deepcopy(q_previous)
+
+        trans_previous=self.robot.GetJointState(self.jointidx_eef,return_type="translation")
+
+        rot=[0, 0.7071068,  0,  0.7071068]
+        trans=deepcopy(trans_previous)
+
+        if command == "up":
+            trans[0]= trans[0]+0.05
+        if command == "down":
+            trans[0]= trans[0]-0.05
+        if command == "left":
+            trans[1]= trans[1]-0.05
+        if command == "right":
+            trans[1]= trans[1]+0.05
+
+        self.InitTarget(trans,rot)
+        
+        for iter in range(0,self.iteration_max):
+
+            x=self.robot.GetJointState(self.jointidx_eef)
+
+            v=self.robot.VelocityWorld_eef()
+
+            v_des=ControllSpeed_eef(self.T_target_world,x)
+            # v_des=LineContSpeed_eef(self.T_target_world,x)
+            
+            dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+
+            q=q+dq*self.dt
+
+            self.SimulationStep(q)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                print("*********************")
+                print("task successed!")
+
+                return q
+                break
+        
+        if err > self.eps:
+            print("*********************")
+            print("task failed!")
+            print("reset to the previous state")
+
+
+            self.SimulationStep(q_previous)
+
+            return q_previous
+    
     def StartSim(self):
 
         q=deepcopy(self.robot.q_init)
@@ -296,50 +418,85 @@ class simualtion():
 
     def StartSimDualshock(self):
 
+        #Q init
+        #======================================#
         q=deepcopy(self.robot.q_init)
         
-        for iter in range(0,self.iteration_max):
+        #Move to init state
+        #======================================#
 
-            x=self.robot.GetJointState(self.jointidx_eef)
-            v=self.robot.VelocityWorld_eef()
+        # self.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
 
-            v_des=ControllSpeed_eef(self.T_target_world,x)
-            # v_des=LineContSpeed_eef(self.T_target_world,x)
-            
-            dq=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+        trans=[0.75579,  0,   1.296]
+        rot=[0, 0.7071068,  0,  0.7071068]
 
-            q=q+dq*self.dt
+        q_previous=self.MoveToTarget(q,trans=trans,rot=rot)
 
-            self.SimulationStep(q)
-            self.plot_data.DataUpdate(
-                q=q,dq=dq,
-                ddq=None,
-                x_EEF_world=x,
-                v_EEF_world=v,
-                time=iter*self.dt)
+        #JoyStick Init
+        #=====================================#
+        pygame.init()
 
-            # error: euclidian distance between two Frame 
-            err=DistHomoMatrix(x,self.T_target_world)
-            print("{:*^30}".format('err'))
-            
-            print(err)
+        joystick=pygame.joystick.Joystick(0)
 
-            if err < self.eps:
-                self.iteration_success=True
-                break
+        joystick.init()
+
+        clock = pygame.time.Clock()
+        color = 0
+
+        running = True
+
+        button_idx=14
+
+        button_dict={'2':"up",
+                    "0":"down",
+                    "3":"left",
+                    "1":"right",
+                    "10":"reset"}
 
 
+        while running:
+
+            for event in pygame.event.get():
+
+                if event.type == pygame.JOYBUTTONDOWN:
+
+                    idx=str(event.button)
+
+                    if button_dict.__contains__(idx):
+
+                        command=button_dict[idx]
+
+                        if command == "up":
+                            print("Button UP is Pressed!")
+
+                        elif command == "down":
+                            print("Button DOWN is Pressed!")
+
+                        elif command == "left":
+                            print("Button LEFT is Pressed!")
+
+                        elif command == "right":
+                            print("Button RIGHT is Pressed!")
+                        
+                        q_previous=self.MoveToTargetJoy(q_previous,command)
+
+
+                    else:
+
+                        print("not in the list!")
+                
 def main():
 
     sim=simualtion()
-
+    #======================================================#
+    sim.StartSimDualshock()
 
     #======================================================#
     # sim.StartSimAPF()
 
 
     #======================================================#
-    sim.StartSim()
+    # sim.StartSim()
 
     # a=sim.robot.GetJointState(sim.jointidx_eef)
     # field=apf(True)

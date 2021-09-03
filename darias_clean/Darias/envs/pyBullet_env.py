@@ -64,18 +64,17 @@ class PyEnv():
 
         # SphereId = p.loadURDF(self.spherePath,sphere_startPos,sphere_startOrientation)
 
-        sphere_obstaclePos = [0.62,  0.49  ,  1.52]
-        sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
-        SphereObsId = p.loadURDF(
-            self.sphereObsPath,
-            basePosition=sphere_obstaclePos,
-            baseOrientation=sphere_obstacleOrientation,
-            useFixedBase=True
-            )
+        # sphere_obstaclePos = [0.62,  0.49  ,  1.52]
+        # sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        # SphereObsId = p.loadURDF(
+        #     self.sphereObsPath,
+        #     basePosition=sphere_obstaclePos,
+        #     baseOrientation=sphere_obstacleOrientation,
+        #     useFixedBase=True
+        #     )
 
     def EndEffectorAxis(self):
         pass
-
 
     def BulletUpdate(self,jointState_pinocchio):
 
