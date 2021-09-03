@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="darias">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="left">
+        <joint name="L_SFE"/>
+        <joint name="L_SAA"/>
+        <joint name="L_HR"/>
+        <joint name="L_EB"/>
+        <joint name="L_WR"/>
+        <joint name="L_WFE"/>
+        <joint name="L_WAA"/>
+    </group>
+    <group name="right">
+        <joint name="R_SFE"/>
+        <joint name="R_SAA"/>
+        <joint name="R_HR"/>
+        <joint name="R_EB"/>
+        <joint name="R_WR"/>
+        <joint name="R_WFE"/>
+        <joint name="R_WAA"/>
+    </group>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="left_eef" parent_link="L_palm" group="left"/>
+    <end_effector name="right" parent_link="R_palm" group="right"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="fixed" type="fixed" parent_frame="fixed" child_link="world"/>
+</robot>
