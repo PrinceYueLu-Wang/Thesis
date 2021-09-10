@@ -286,7 +286,7 @@ class simualtion():
     
     def MoveToTargetJoy(self,q_previous,command):
 
-        print(command)
+        # print(command)
 
         q=deepcopy(q_previous)
 
@@ -323,22 +323,23 @@ class simualtion():
 
             # error: euclidian distance between two Frame 
             err=DistHomoMatrix(x,self.T_target_world)
-            print("{:*^30}".format('err'))
-            
-            print(err)
+            if iter % 10 == 0 :
+                print("{:*^10}".format('err'))
+                
+                print(err)
 
             if err < self.eps:
                 self.iteration_success=True
-                print("*********************")
-                print("task successed!")
+                print("{:*^10}".format('state'))
+                print("Task Successed!")
 
                 return q
                 break
         
         if err > self.eps:
-            print("*********************")
-            print("task failed!")
-            print("reset to the previous state")
+            print("{:*^10}".format('state'))
+            print("Task Failed!")
+            print("Reset to the Previous State")
 
 
             self.SimulationStep(q_previous)
@@ -465,6 +466,8 @@ class simualtion():
                     if button_dict.__contains__(idx):
 
                         command=button_dict[idx]
+
+                        print("="*20)
 
                         if command == "up":
                             print("Button UP is Pressed!")
