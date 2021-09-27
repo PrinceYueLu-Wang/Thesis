@@ -16,7 +16,7 @@ class FK_ALL(Map):
 
     def map_state(self, x):  # x: torch.Size([1, 14])
         q = x[:, :7]  # torch.Size([1, 7])
-        qd = x[:, 7:]  # torch.Size([1, 7])
+        qd = x[:, 7:14]  # torch.Size([1, 7])
         q_np = torch2numpy(q[0, :])   # (7, )
         qd_np = torch2numpy(qd[0, :])  # (7, )
 

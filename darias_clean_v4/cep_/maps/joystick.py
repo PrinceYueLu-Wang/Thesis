@@ -6,81 +6,23 @@ from cep_.utils import torch2numpy, numpy2torch
 import time
 
 
-class JoyControlMap(Map):
-    '''
-    Map joints from to cartesian space
-    '''
-    def __init__(self, idx=0):
-        super(SelectionMap, self).__init__()
-        self.idx = idx
-
-    def map_state(self, x):
-
-        # x[0]->torch.Size([7, 4, 4])
-        # x[1]->torch.Size([7, 6])
-
-        xyz = x[0][self.idx, ...] # torch.Size([4, 4])
-        v_xyz = x[1][self.idx, ...] # torch.Size([6])
-        return [xyz, v_xyz]
-
-    def map_action(self,a):
-        return a[:, self.idx, ...]
-
-class JoyFarMap(Map):
-    '''
-    Map joints from to cartesian space
-    '''
-    def __init__(self, idx=0):
-        super(SelectionMap, self).__init__()
-        self.idx = idx
-
-    def map_state(self, x):
-
-        # x[0]->torch.Size([7, 4, 4])
-        # x[1]->torch.Size([7, 6])
-
-        xyz = x[0][self.idx, ...] # torch.Size([4, 4])
-        v_xyz = x[1][self.idx, ...] # torch.Size([6])
-        return [xyz, v_xyz]
-
-    def map_action(self,a):
-        return a[:, self.idx, ...]
-
-class JoyCloseMap(Map):
-    '''
-    Map joints from to cartesian space
-    '''
-    def __init__(self, idx=0):
-        super(SelectionMap, self).__init__()
-        self.idx = idx
-
-    def map_state(self, x):
-
-        # x[0]->torch.Size([7, 4, 4])
-        # x[1]->torch.Size([7, 6])
-
-        xyz = x[0][self.idx, ...] # torch.Size([4, 4])
-        v_xyz = x[1][self.idx, ...] # torch.Size([6])
-        return [xyz, v_xyz]
-
-    def map_action(self,a):
-        return a[:, self.idx, ...]
-
-class forward_kin(Map):
+class Joy_FK_ALL(Map):
     '''
     Map joints to cartesian space
     '''
-    def __init__(self, kinematics_model):
-        super(forward_kin, self).__init__()
 
+    def __init__(self, kinematics_model):
+        super(Joy_FK_ALL, self).__init__()
         self.kinematics = kinematics_model
         self.J = None
-        self.J
 
-    def map_state(self, x):  # x: torch.Size([1, 14])
+    def map_state(self, x):
+        # x -> torch.size([1,14+2]) 7 q + 7 dq + 2 joystick aixs0 and axis1
         q = x[:, :7]  # torch.Size([1, 7])
-        qd = x[:, 7:]  # torch.Size([1, 7])
-        q_np = torch2numpy(q[0, :])   # (7, )
+        qd = x[:, 7:14]  # torch.Size([1, 7])
+        qjoy = x[:, 15:]  # torch.Size([1, 2])
+
+        q_np = torch2numpy(q[0, :])  # (7, )
         qd_np = torch2numpy(qd[0, :])  # (7, )
 
         ## Update Kinematics Model ##
@@ -94,8 +36,54 @@ class forward_kin(Map):
         self.J = numpy2torch(J)
         z = numpy2torch(z)  # torch.Size([7, 4, 4])
         zd = numpy2torch(zd)  # torch.Size([7, 6])
-        return [z, zd]
+        zjoy = qjoy
+
+        return [z, zd, zjoy]
 
     def map_action(self, a):
         return torch.einsum('jnm,bm->bjn', self.J, a)  # torch.Size([1000, 7, 6])
         #  J->torch.Size([7, 6, 7]), a->torch.Size([1000, 7])
+
+
+class Joy_SelectionMap(Map):
+    '''
+    Map joints to cartesian space
+    '''
+
+    def __init__(self, idx=0):
+        super(Joy_SelectionMap, self).__init__()
+        self.idx = idx
+
+    def map_state(self, x):
+        # x[0]->torch.Size([7, 4, 4])
+        # x[1]->torch.Size([7, 6])
+        # x[2]->torch.Size([1,2])
+
+        xyz = x[0][self.idx, ...]  # torch.Size([4, 4])
+        v_xyz = x[1][self.idx, ...]  # torch.Size([6])
+
+        joy_xyz = x[2]
+
+        return [xyz, v_xyz, joy_xyz]
+
+    def map_action(self, a):
+        return a[:, self.idx, ...]
+
+
+class Joy_SimpleMap(Map):
+    '''
+    Map joints to cartesian space
+    '''
+
+    def __init__(self):
+        super(Joy_SimpleMap, self).__init__()
+
+    def map_state(self, state):
+        x = state[0]  # torch.Size([4, 4])
+        dx = state[1]  # torch.Size([6])
+        joy = state[2]  # torch.Size([2])
+
+        return state
+
+    def map_action(self, a):
+        return a
