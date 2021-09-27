@@ -1,9 +1,9 @@
 import torch
 import numpy as np
-from cep.utils import eul2rot
+from cep_.utils import eul2rot
 
-from cep.kinematics import DarIASArm
-from cep.controllers import EBMControl, EnergyTree
+from cep_.kinematics import DarIASArm
+from cep_.controllers import EBMControl, EnergyTree
 
 
 from cep import maps
@@ -17,7 +17,8 @@ else:
     device = torch.device("cpu")
 
 
-def cep_simple_model():
+def cep_models_joy():
+
     ##Get all the FK maps##
     darias_kin = DarIASArm()
     fk_map = maps.FK_ALL(darias_kin)

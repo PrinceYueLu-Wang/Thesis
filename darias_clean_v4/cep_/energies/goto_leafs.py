@@ -48,12 +48,12 @@ class TaskGoToLeaf(EnergyLeaf):
 
         Htl = torch.matmul(self.R_inv, x) # R_inv * X
         #print('Htl: ', Htl)
-        Xe = SE3.from_matrix(Htl) # <cep.liegroups.torch.se3.SE3Matrix>, SE(3)
+        Xe = SE3.from_matrix(Htl) # <cep_.liegroups.torch.se3.SE3Matrix>, SE(3)
         #print('Xe: ', Xe)
         xtl = Xe.log() # Tensor(1, 6), (omega, V)
         #print('xtl: ', xtl)
         vtl = -xtl
-        A = SE3.from_matrix(self.R) # <cep.liegroups.torch.se3.SE3Matrix>, SE(3), R
+        A = SE3.from_matrix(self.R) # <cep_.liegroups.torch.se3.SE3Matrix>, SE(3), R
         #print('A: ', A)
         Adj_lw = A.adjoint() # Adjoint map (Spatial velocity from one frame to another frame), Tensor (6,6),
         #print('Adj_lw: ', Adj_lw)

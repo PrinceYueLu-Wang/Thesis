@@ -1,4 +1,4 @@
-from cep.kinematics.robot_model import Robot
+from cep_.kinematics.robot_model import Robot
 import os
 
 base_dir = os.path.abspath(os.path.dirname(__file__) + '../../..')
