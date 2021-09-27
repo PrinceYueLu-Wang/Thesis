@@ -23,6 +23,7 @@ joint_limits = np.array([2.96, 2.09, 2.96, 2.09, 2.96, 2.09, 2.96]) - joint_limi
 device = torch.device('cpu')
 
 class CEPPolicy():
+
     def __init__(self, dt=1 / 240., dtype='float64'):
         self.dt = dt
         self.dtype = dtype
@@ -30,6 +31,7 @@ class CEPPolicy():
         self.controller = cep_simple_model()
 
     def policy(self, state):
+
         joint_poses = state[0,0:7]
         joint_vels = state[0,7:]
 
