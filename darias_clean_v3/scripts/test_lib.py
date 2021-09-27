@@ -42,11 +42,14 @@ class CEPPolicy():
         return x, dx
 
 
-    def step(self, joint_poses, joint_vels, joint_accs):
-        joint_poses = joint_poses + joint_vels * self.dt
-        joint_vels = joint_vels + joint_accs * self.dt
+    # def step(self, joint_poses, joint_vels, joint_accs):
+    #     joint_poses = joint_poses + joint_vels * self.dt
+    #     joint_vels = joint_vels + joint_accs * self.dt
+    #     return joint_poses, joint_vels
+    def step(self, joint_poses, joint_vels, joint_vels2):
+        joint_poses = joint_poses + joint_vels2 * self.dt
+        joint_vels = joint_vels2
         return joint_poses, joint_vels
-
 
 def experiment():
     '''

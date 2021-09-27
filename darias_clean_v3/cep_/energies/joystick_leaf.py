@@ -113,8 +113,8 @@ class TaskJoyStickLeaf(EnergyLeaf):
 
         #===========================================#
 
-        k_x=1
-        k_y=0
+        k_x=0
+        k_y=1
 
         dx = k_x * 0.2/20
         dy = k_y * 0.2/20
@@ -125,7 +125,7 @@ class TaskJoyStickLeaf(EnergyLeaf):
 
         _var=torch.clone(self.var)
         for i in range(2,6):
-            _var[i,i]=_var[i,i]*100
+            _var[i,i]=_var[i,i]*1000
 
         # self.p_dx = tdist.MultivariateNormal(mu, self.var)
         self.p_dx = tdist.MultivariateNormal(mu, _var)
