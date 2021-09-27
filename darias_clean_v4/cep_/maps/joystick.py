@@ -16,11 +16,11 @@ class Joy_FK_ALL(Map):
         self.kinematics = kinematics_model
         self.J = None
 
-    def map_state(self, x):
+    def map_state(self, state):
         # x -> torch.size([1,14+2]) 7 q + 7 dq + 2 joystick aixs0 and axis1
-        q = x[:, :7]  # torch.Size([1, 7])
-        qd = x[:, 7:14]  # torch.Size([1, 7])
-        qjoy = x[:, 15:]  # torch.Size([1, 2])
+        q = state[:, :7]  # torch.Size([1, 7])
+        qd = state[:, 7:14]  # torch.Size([1, 7])
+        qjoy = state[:, 15:]  # torch.Size([1, 2])
 
         q_np = torch2numpy(q[0, :])  # (7, )
         qd_np = torch2numpy(qd[0, :])  # (7, )
@@ -40,8 +40,8 @@ class Joy_FK_ALL(Map):
 
         return [z, zd, zjoy]
 
-    def map_action(self, a):
-        return torch.einsum('jnm,bm->bjn', self.J, a)  # torch.Size([1000, 7, 6])
+    def map_action(self, action_origin):
+        return torch.einsum('jnm,bm->bjn', self.J, action_origin)  # torch.Size([1000, 7, 6])
         #  J->torch.Size([7, 6, 7]), a->torch.Size([1000, 7])
 
 

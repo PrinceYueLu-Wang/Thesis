@@ -12,7 +12,6 @@ rootlib = os.path.abspath(os.path.join(dir, '..'))
 sys.path.append(rootlib)
 
 from cep_.envs import DariasHandSimple
-from cep_.cep_models import cep_simple_model
 from cep_.cep_models import cep_models_joy
 from cep_.joystick import Joystick
 

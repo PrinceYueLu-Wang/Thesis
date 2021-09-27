@@ -44,10 +44,12 @@ def cep_models_joy():
 
     ee_joy_leaf = energies.TaskGoTO_JoyControl(dim=6, b=b, A=A, R=H, var=torch.eye(6) * 1.)
     pick_map = maps.Joy_SelectionMap(idx=6)
-    ee_energy_tree = EnergyTree(branches=[ee_joy_leaf], map=pick_map)
+    ee_energy_tree = EnergyTree(branches=[ee_joy_leaf], map=pick_map, name="ee_energy_tree")
+
+    fk_map = maps.Joy_FK_ALL(darias_kin)
 
     q_branches = [ee_energy_tree]
-    energy_tree = EnergyTree(branches=q_branches, map=maps.Joy_FK_ALL).to(device)
+    energy_tree = EnergyTree(branches=q_branches, map=fk_map, name="energy_tree").to(device)
     policy = EBMControl(energy_tree=energy_tree, device=device, optimization_steps=5, dt=0.005, n_particles=10000)
 
     return policy
