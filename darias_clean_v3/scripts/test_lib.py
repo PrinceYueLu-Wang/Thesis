@@ -65,9 +65,18 @@ def experiment():
     horizon = 1500
     c = 0
     s = 0
+    ################
+    q_initset=[ 0.41218702,  0.96820871, -2.35509904,  1.6827199 , -0.88989564,
+                      -0.34380408,  1.58004667,  0.01671192, -0.02585537, -0.05823977,
+                       0.02063612,  0.10688131,  0.04823189, -0.08189419]
+    q_initset=q_initset[:7]
+    ################
+
+
     for itr in range(n_trials):
         print('Iteration: {}'.format(itr))
-        state = env.reset()
+        # state = env.reset()
+        state = env.reset(q0=q_initset)
         p.addUserDebugLine([0., 0., -0.189], [1.5, 0., -0.189], [1., 0., 0.])
  
         for i in range(horizon):
