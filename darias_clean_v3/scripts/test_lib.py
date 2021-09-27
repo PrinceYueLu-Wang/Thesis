@@ -11,9 +11,6 @@ import numpy as np
 import pybullet as p
 import time
 
-import tkinter as tk
-
-
 from cep_.envs import DariasHandSimple
 from cep_.cep_models import cep_simple_model
 
@@ -37,6 +34,10 @@ class CEPPolicy():
         joint_vels = state[0,7:]
 
         action = self.controller.policy(state)
+
+        ## Smoothing
+        alpha = 0.1
+        action = alpha*action + (1-alpha)*joint_vels
 
         x,dx = self.step(joint_poses, joint_vels, action)
         return x, dx
@@ -101,5 +102,4 @@ if __name__ == '__main__':
               options='--background_color_red=1. --background_color_green=1. --background_color_blue=1.')
     p.resetDebugVisualizerCamera(2.2, 55.6, -47.4, [0.04, 0.06, 0.31])
 
-    # TK_GUI()
     experiment()

@@ -2,13 +2,13 @@ import torch
 import torch.autograd as autograd
 import numpy as np
 
-from cep.utils import torch2numpy, numpy2torch
+from cep_.utils import torch2numpy, numpy2torch
 
 import torch.nn as nn
 
-from cep.optimizer import RWR
+from cep_.optimizer import RWR
 
-from cep.maps import Map
+from cep_.maps import Map
 
 import time
 

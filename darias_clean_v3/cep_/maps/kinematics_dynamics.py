@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 from .base_map import Map
-from cep.utils import torch2numpy, numpy2torch
+from cep_.utils import torch2numpy, numpy2torch
 
 
 class FK_ALL(Map):

@@ -4,8 +4,8 @@ import numpy as np
 
 from .energy_leaf import EnergyLeaf
 
-from cep.utils import eul2rot, rot2eul, rot2quat
-from cep.liegroups.torch import SO3, SE3
+from cep_.utils import eul2rot, rot2eul, rot2quat
+from cep_.liegroups.torch import SO3, SE3
 
 
 class TaskGoToLeaf(EnergyLeaf):

@@ -4,8 +4,8 @@ import numpy as np
 
 from .energy_leaf import EnergyLeaf
 
-from cep.utils import eul2rot, rot2eul, rot2quat
-from cep.liegroups.torch import SO3, SE3
+from cep_.utils import eul2rot, rot2eul, rot2quat
+from cep_.liegroups.torch import SO3, SE3
 
 
 class TaskGoToLeaf(EnergyLeaf):
@@ -112,12 +112,14 @@ class TaskJoyStickLeaf(EnergyLeaf):
         v = state[1]  # Tensor (1, 6), end-effector spatial velocity V_b
 
         #===========================================#
+        x0 = state[0][0, -1]
+        y0 = state[0][1, -1]
 
-        k_x=0
-        k_y=1
+        k_x=(x0 - 0.3)
+        k_y=(y0 - 0.)
 
-        dx = k_x * 0.2/20
-        dy = k_y * 0.2/20
+        dx = -k_x
+        dy = -k_y
 
         mu=torch.zeros((6))
         mu[0]=dx
@@ -125,7 +127,7 @@ class TaskJoyStickLeaf(EnergyLeaf):
 
         _var=torch.clone(self.var)
         for i in range(2,6):
-            _var[i,i]=_var[i,i]*1000
+            _var[i,i]=_var[i,i]*0.1
 
         # self.p_dx = tdist.MultivariateNormal(mu, self.var)
         self.p_dx = tdist.MultivariateNormal(mu, _var)
