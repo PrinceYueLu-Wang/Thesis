@@ -75,6 +75,28 @@ class Robot(object):
                 pin.ReferenceFrame.WORLD
             )
 
+    def links_JInv(self):
+        JInv_list = []
+
+        for link_id in self.links_ids:
+            Ji = link_worldJInv(link_id)
+   
+            JInv_list.append(Ji)
+
+        return JInv_list
+
+    def link_worldJInv(self,name_idx):
+
+        J=self.link_worldJ
+
+        return np.matmul(J.T,
+                    np.linalg.inv(
+                        np.matmul(J,J.T)
+                        +self.DAMP*np.eye(6))
+                )
+
+
+
 # if __name__ == '__main__':
 #     base_dir = os.path.abspath(os.path.dirname(__file__) + '../../..')
 #     robot_dir = os.path.join(base_dir, 'robots/darias_description/robots')
@@ -89,5 +111,18 @@ class Robot(object):
 #     print(robot)
 
 
+# if __name__ == '__main__':
+#     base_dir = os.path.abspath(os.path.dirname(__file__) + '../../..')
+#     robot_dir = os.path.join(base_dir, 'robots/darias_description/robots')
+#     urdf_filename = os.path.join(robot_dir, 'darias_clean.urdf')
 
+#     link_names = ['R_1_link', 'R_2_link', 'R_3_link']
 
+#     robot = Robot(urdf_file=urdf_filename, link_name_list=link_names)
+#     q = np.random.rand(7)
+#     robot.update_kindyn(q=q)
+
+#     a=robot.links_J()
+#     b=robot.links_JInv()
+
+#     print(robot)
