@@ -19,6 +19,8 @@ from cep_.cep_models import cep_models_joy
 from cep_.joystick import Joystick
 from cep_.gui import ProjectGUI
 
+from cep_.kinematics import DarIASArm
+
 joint_limit_buffers = 0.01
 joint_limits = np.array([2.96, 2.09, 2.96, 2.09, 2.96, 2.09, 2.96]) - joint_limit_buffers
 
@@ -59,7 +61,7 @@ class JOYPolicy:
 
 class Experiment(Process):
 
-    def __init__(self, lock, axis_array_share):
+    def __init__(self, lock, axis_array_share, robotstate_array_share=None):
         super(Experiment, self).__init__()
 
         self.time_step = 1 / 250.
@@ -75,9 +77,19 @@ class Experiment(Process):
 
         ################
 
-        self.lock = lock
+        self.lock = Lock()
+
         self.axis_array_share = axis_array_share
         self.axis_array = np.zeros(shape=(1, 2))
+
+        self.robotstate_array_share = robotstate_array_share
+        self.robotstate_array = np.zeros(shape=(1, 16)) # 7 + 3 + 6
+
+        ################
+
+        self.pseudo = DarIASArm()
+
+
 
     def EnvInit(self):
         # return q ndarray(1,14)
@@ -106,6 +118,32 @@ class Experiment(Process):
 
         return np.concatenate((state_env, state_joy), axis=1)
 
+    def PseudoUpdate(self,state):
+        
+        q = state[0] # np.shape (7)
+        dq = state[1] # np.shape (7)
+
+        self.pseudo.update_kindyn(q)
+
+        J = self.pseudo.eef_worldJ()  # np.shape (6,7)
+
+        x = self.pseudo.eef_worldPos() # np.shape (3)
+        v = np.matmul(J,dq) # np.shape (6)
+
+        self.robotstate_array = np.concatenate((q,x,v)) #np shape (16,)
+
+        self.lock.acquire()
+
+        for i in range(16):
+
+            self.robotstate_array_share[i] =  self.robotstate_array[i]
+
+        self.lock.release()
+
+        return 0
+
+
+
     def run(self):
 
         for iter_trial in range(self.n_trials):
@@ -124,8 +162,14 @@ class Experiment(Process):
 
                 ###############################
 
+                # action : tuple (q, dq)    
                 action = self.policy.policy(state)
+
                 state, reward, done, success = self.env.step(action)
+
+                # ! robot state to GUI
+
+                self.PseudoUpdate(action)
 
                 # ! here should concatenate state(1,14) with joystick(1,2)
                 self.GetJoyStick()
@@ -149,9 +193,16 @@ if __name__ == '__main__':
 
     multiprocess_lock = Lock()
     multiprocess_joyarray = Array('f', [0.0, 0.0])
+    multiprocess_robotarray = Array('f', [0.0] * 16)
 
     joy_controller = Joystick(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
-    experiment = Experiment(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
+    
+    # experiment = Experiment(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
+    
+    experiment = Experiment(lock=multiprocess_lock, 
+                            axis_array_share=multiprocess_joyarray,
+                            robotstate_array_share=multiprocess_robotarray)
+
 
     if GUI_ENABLE:
         gui = ProjectGUI(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)

@@ -15,6 +15,8 @@ class Robot(object):
             for link_name in self.links_names
         ]
 
+        self.eef_id = self.links_ids[-1]
+
     def update_kindyn(self, q):
         pin.computeJointJacobians(self.model, self.data, q)
         pin.framesForwardKinematics(self.model, self.data, q)
@@ -95,6 +97,18 @@ class Robot(object):
                         +self.DAMP*np.eye(6))
                 )
 
+    def eef_worldJ(self):
+
+        return pin.getFrameJacobian(
+                self.model,
+                self.data,
+                self.eef_id,
+                pin.ReferenceFrame.WORLD
+            )
+
+    def eef_worldPos(self):
+
+        return self.data.oMf[self.eef_id].translation
 
 
 # if __name__ == '__main__':
