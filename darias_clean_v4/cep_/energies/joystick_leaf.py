@@ -57,8 +57,8 @@ class TaskGoTO_JoyControl(EnergyLeaf):
         # dx = -k_x
         # dy = -k_y
 
-        dx = joystick[0] * 1.0
-        dy = joystick[1] * 1.0
+        dy = joystick[0][0] * 2.0
+        dx = joystick[0][1] * 1.0
 
         mu = torch.zeros((6))  # Tensor(6, 1)
         mu[0] = dx

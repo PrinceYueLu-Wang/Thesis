@@ -5,6 +5,8 @@ import numpy as np
 import pybullet as p
 import time
 
+from multiprocessing import Process, Value, Lock, Array
+
 import torch
 
 dir = os.path.dirname(__file__)
@@ -13,14 +15,14 @@ sys.path.append(rootlib)
 
 from cep_.envs import DariasHandSimple
 from cep_.cep_models import cep_models_joy
+
 from cep_.joystick import Joystick
+from cep_.gui import ProjectGUI
 
 joint_limit_buffers = 0.01
 joint_limits = np.array([2.96, 2.09, 2.96, 2.09, 2.96, 2.09, 2.96]) - joint_limit_buffers
 
 device = torch.device('cpu')
-
-from multiprocessing import Process, Value, Lock, Array
 
 
 class JOYPolicy:
@@ -33,12 +35,15 @@ class JOYPolicy:
         # self.controller = cep_simple_model()
 
     def policy(self, state):
+
+        # state torch.Size(1,16)
+
         joint_poses = state[0, 0:7]
-        joint_vels = state[0, 7:]
+        joint_vels = state[0, 7:14]
 
         action = self.controller.policy(state)
 
-        ## Smoothing
+        # smoothing
         alpha = 0.1
         action = alpha * action + (1 - alpha) * joint_vels
 
@@ -121,6 +126,10 @@ class Experiment(Process):
                 action = self.policy.policy(state)
                 state, reward, done, success = self.env.step(action)
 
+                # ! here should concatenate state(1,14) with joystick(1,2)
+                self.GetJoyStick()
+                state = self.StateCat(state_env=state,state_joy=self.axis_array)
+
                 #############################
 
                 end = time.time()
@@ -142,9 +151,11 @@ if __name__ == '__main__':
 
     joy_controller = Joystick(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
     experiment = Experiment(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
+    gui = ProjectGUI(lock=multiprocess_lock, axis_array_share=multiprocess_joyarray)
 
     joy_controller.start()
     experiment.start()
+    gui.mainloop()
 
     experiment.join()
     joy_controller.join()

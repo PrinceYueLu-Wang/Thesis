@@ -20,7 +20,6 @@ def cep_models_joy():
     # get all the FK maps
     darias_kin = DarIASArm()
 
-    fk_map = maps.FK_ALL(darias_kin)
     #########################
     # End Effector Branch
 
@@ -32,15 +31,6 @@ def cep_models_joy():
     H[:3, -1] = b
 
     A = torch.eye(6)
-
-    # A = torch.eye(6)
-    # ee_goto_leaf = energies.TaskGoToLeaf(dim=6, b=b, A=A, R=H, var=torch.eye(6)*10.)
-    # pick_map = maps.SelectionMap(idx=6)
-    # ee_energy_tree = EnergyTree(branches=[ee_goto_leaf], map=pick_map)  # TODO: add branches here???
-    # #########################
-    # q_branches = [ee_energy_tree]
-    # energy_tree = EnergyTree(branches=q_branches, map=fk_map).to(device)
-    # policy = EBMControl(energy_tree=energy_tree, device=device, optimization_steps=5, dt=0.005, n_particles=1000)
 
     ee_joy_leaf = energies.TaskGoTO_JoyControl(dim=6, b=b, A=A, R=H, var=torch.eye(6) * 1.)
     pick_map = maps.Joy_SelectionMap(idx=6)

@@ -19,8 +19,10 @@ class Joy_FK_ALL(Map):
     def map_state(self, state):
         # x -> torch.size([1,14+2]) 7 q + 7 dq + 2 joystick aixs0 and axis1
         q = state[:, :7]  # torch.Size([1, 7])
+
         qd = state[:, 7:14]  # torch.Size([1, 7])
-        qjoy = state[:, 15:]  # torch.Size([1, 2])
+
+        qjoy = state[:, 14:]  # torch.Size([1, 2])
 
         q_np = torch2numpy(q[0, :])  # (7, )
         qd_np = torch2numpy(qd[0, :])  # (7, )
