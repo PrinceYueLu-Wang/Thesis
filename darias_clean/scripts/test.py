@@ -55,7 +55,7 @@ class simualtion():
         self.dt=0.1
 
         # self.enable_pybullet=True
-        self.enable_pybullet=True
+        self.enable_pybullet=False
 
         self.eps=3*1e-3
 
@@ -202,7 +202,7 @@ class simualtion():
                 iteration_success=True
                 break
 
-            if iter % 100 == 0:
+            if iter % 10 == 0:
                 print("No. {} with error {}:".format(iter,err))
                 print("x : {}".format(x[0:3,-1]))
 
@@ -492,11 +492,10 @@ def main():
 
     sim=simualtion()
     #======================================================#
-    sim.StartSimDualshock()
+    # sim.StartSimDualshock()
 
     #======================================================#
     # sim.StartSimAPF()
-
 
     #======================================================#
     # sim.StartSim()
@@ -510,19 +509,22 @@ def main():
     #     trans_target=[0.73183, 0.2339, 1.4109],
     #     quater=[0.20901,0.68476,-0.22178,0.66199]
     #     ))
+
     #======================================================#
     # possible pose 3 
     # print(sim.KinematicInv(
     #     trans_target=[0.75579,  -0.12606,   1.296],
     #     quater=[0.21194,   0.7567,  -0.18032,  0.59158]
     #     ))  
+
     #======================================================#
     # possible pose 4 
     # print(sim.KinematicInv(
     #     trans_target=[0.75579,  0.1,   1.296],
     #     quater=[0, 0.7071068,  0+0.1,  0.7071068]
     #     ))  
-     #======================================================#
+
+    #======================================================#
     # sim.StartSim()
     # print(sim.KinematicInv([0.3,0.1,1.5]))
     # for x in np.linspace(0,0.5,10):
@@ -532,6 +534,14 @@ def main():
     #             print("x={},y={},z={},res={}".format(x,y,z,flag))
     # sim.plot_data.Plot_x_EEF_world()
      #======================================================#
+
+
+
+    #======================================================#
+    print(sim.KinematicInv(
+        trans_target=[0.3, 0.0, 1.0],
+        quater=[0.20901,0.68476,-0.22178,0.66199]
+        ))
 
 
 if __name__ == '__main__':
