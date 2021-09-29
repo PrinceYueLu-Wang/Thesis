@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -15,6 +16,8 @@ sys.path.append(rootlib)
 
 from cep_.envs import DariasHandSimple
 from cep_.cep_models import cep_models_joy
+from cep_.cep_models import cep_models_joy_3leaf
+
 
 from cep_.joystick import Joystick
 from cep_.gui import ProjectGUI
@@ -33,9 +36,12 @@ class JOYPolicy:
     def __init__(self, dt=1 / 240., dtype='float64'):
         self.dt = dt
         self.dtype = dtype
-
-        self.controller = cep_models_joy()
+        
         # self.controller = cep_simple_model()
+        # self.controller = cep_models_joy()
+        # self.controller = cep_models_joy_3leaf()
+
+        self.controller = cep_models_joy_3leaf()
 
     def policy(self, state):
 
@@ -54,8 +60,10 @@ class JOYPolicy:
         return x, dx
 
     def step(self, joint_poses, joint_vels, joint_vels2):
+
         joint_poses = joint_poses + joint_vels2 * self.dt
         joint_vels = joint_vels2
+
         return joint_poses, joint_vels
 
 
@@ -94,12 +102,15 @@ class Experiment(Process):
 
     def EnvInit(self):
         # return q ndarray(1,14)
-        q_InitSet = [0.41218702, 0.96820871, -2.35509904, 1.6827199, -0.88989564,
-                     -0.34380408, 1.58004667, 0.01671192, -0.02585537, -0.05823977,
-                     0.02063612, 0.10688131, 0.04823189, -0.08189419]
+
+        # q_InitSet = [0.41218702, 0.96820871, -2.35509904, 1.6827199, -0.88989564,
+        #              -0.34380408, 1.58004667, 0.01671192, -0.02585537, -0.05823977,
+        #              0.02063612, 0.10688131, 0.04823189, -0.08189419]
 
         # joint 0 to 6 : right arm
-        q_InitSet = q_InitSet[:7]
+        # q_InitSet = q_InitSet[:7]
+
+        q_InitSet = [-0.3917, -0.0236, -1.7561, 1.5493, 0.3208, 1.1331, 1.1331]
 
         return self.env.reset(q0=q_InitSet)
 
@@ -155,6 +166,7 @@ class Experiment(Process):
         self.lock.release()
 
         return 0
+
 
     def run(self):
 

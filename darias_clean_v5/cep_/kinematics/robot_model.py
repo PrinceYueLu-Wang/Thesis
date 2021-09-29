@@ -81,7 +81,7 @@ class Robot(object):
         JInv_list = []
 
         for link_id in self.links_ids:
-            Ji = link_worldJInv(link_id)
+            Ji = self.link_worldJInv(link_id)
    
             JInv_list.append(Ji)
 

@@ -89,11 +89,14 @@ class DariasHandSimple():
     def reset(self, q0=None):
         # Initialize Pybullet Environment
         if q0 is None:
+
             for i, q_i in enumerate(self.q_home):
                 q_i = q_i + np.random.randn() * 0.2
                 p.resetJointState(self.robot, self.JOINT_ID[i], q_i)
             p.stepSimulation()
+        
         else:
+            
             for i, q_i in enumerate(q0):
                 p.resetJointState(self.robot, self.JOINT_ID[i], q_i)
             p.stepSimulation()
