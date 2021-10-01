@@ -51,8 +51,6 @@ class TaskGoTO_JoyControl(EnergyLeaf):
         # _var[3,3] = 1
         # _var[4,4] = 1
         # _var[5,5] = 1
-
-
         # for i in range(2, 6):
         #     _var[i, i] = _var[i, i] * 0.1
 
@@ -63,7 +61,7 @@ class TaskGoTO_JoyControl(EnergyLeaf):
         if dist >= 0.1 :
             _var = _var * 0.1
         else :
-            _var = _var *100
+            _var = _var *20
 
         self.p_dx = tdist.MultivariateNormal(mu, _var)  # self.var->torch.size(6, 6)
 
@@ -116,7 +114,7 @@ class TaskGoTO_JoyFar(EnergyLeaf):
         if dist >= 0.1 :
             _var = _var * 0.1
         else :
-            _var = _var *10
+            _var = _var *20
 
         # self.p_dx = tdist.MultivariateNormal(mu, self.var)
         self.p_dx = tdist.MultivariateNormal(mu, _var)
@@ -192,7 +190,7 @@ class TaskGoTO_JoyClose(EnergyLeaf):
         dist = torch.linalg.norm(cur_pos-target_pos)
 
         if dist >= 0.1 :
-            _var = _var * 100.
+            _var = _var * 10.
         else :
             _var = _var * 0.1
 

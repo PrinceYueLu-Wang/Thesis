@@ -203,7 +203,7 @@ class Experiment(Process):
                 #############################
 
                 end = time.time()
-                print(end-init)
+                # print(end-init)
 
                 time.sleep(np.clip(self.time_step - (end - init), 0, self.time_step))
 

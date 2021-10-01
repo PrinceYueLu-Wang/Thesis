@@ -110,7 +110,8 @@ class Experiment(Process):
         # joint 0 to 6 : right arm
         # q_InitSet = q_InitSet[:7]
 
-        q_InitSet = [-0.3917, -0.0236, -1.7561, 1.5493, 0.3208, 1.1331, 1.1331]
+        q_InitSet = [-0.3917, -0.0236, -1.7561, 1.5493, 0.3208, -1.1331, 1.1331]
+        # q_InitSet = [-0.17590232 ,-2.00404716 , 1.14864648 ,-0.89694388 , 0.57499068 , 2.17113403 ,-1.08167996]
 
         return self.env.reset(q0=q_InitSet)
 
