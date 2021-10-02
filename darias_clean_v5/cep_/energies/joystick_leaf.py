@@ -112,9 +112,9 @@ class TaskGoTO_JoyFar(EnergyLeaf):
         dist = torch.linalg.norm(cur_pos-target_pos)
 
         if dist >= 0.1 :
-            _var = _var * 0.1
+            _var = _var * 100.
         else :
-            _var = _var *20
+            _var = _var * 100.
 
         # self.p_dx = tdist.MultivariateNormal(mu, self.var)
         self.p_dx = tdist.MultivariateNormal(mu, _var)
@@ -192,7 +192,7 @@ class TaskGoTO_JoyClose(EnergyLeaf):
         if dist >= 0.1 :
             _var = _var * 10.
         else :
-            _var = _var * 0.1
+            _var = _var * 0.01
 
 
 

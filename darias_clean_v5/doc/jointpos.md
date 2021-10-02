@@ -48,6 +48,43 @@ ps -aux | grep test_lib.py | awk '{print $2}' | xargs kill -9
 leaf var config 
 ===============
 
-test 1  :
+origin 1  :
 
 leaf control : 
+
+        if dist >= 0.1 :
+            _var = _var * 0.1
+        else :
+            _var = _var *20
+
+
+leaf far :
+
+        if dist >= 0.1 :
+            _var = _var * 0.1
+        else :
+            _var = _var *20
+
+leaf close :
+
+        if dist >= 0.1 :
+            _var = _var * 10.
+        else :
+            _var = _var * 0.1
+
+
+result : 
+
+=============
+
+test 2 :
+
+leaf control : 
+
+leaf far :
+
+leaf close :
+
+result : 
+
+=============
