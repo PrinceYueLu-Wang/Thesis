@@ -200,6 +200,7 @@ class simualtion():
 
             if err < 0.3*1e-3:
                 iteration_success=True
+                print(q)
                 break
 
             if iter % 10 == 0:
@@ -540,7 +541,7 @@ def main():
     #======================================================#
     print(sim.KinematicInv(
         trans_target=[0.3, 0.0, 1.0],
-        quater=[0.20901,0.68476,-0.22178,0.66199]
+        quater=[0,0,-0.707,0.707]
         ))
 
 
