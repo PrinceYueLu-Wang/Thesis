@@ -29,7 +29,7 @@ joint_limits = np.array([2.96, 2.09, 2.96, 2.09, 2.96, 2.09, 2.96]) - joint_limi
 
 device = torch.device('cpu')
 
-GUI_ENABLE = True
+GUI_ENABLE = False
 
 class JOYPolicy:
 
