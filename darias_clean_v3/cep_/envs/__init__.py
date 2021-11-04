@@ -1,1 +1,0 @@
-from .darias_and_hand_simple_env import DariasHandSimple
