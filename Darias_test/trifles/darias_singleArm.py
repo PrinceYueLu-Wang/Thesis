@@ -75,13 +75,18 @@ class darias_OSC:
         # print("function {} is running!".format("calculate_mu"))
         x = curState_EE[0]  # Tensor(4, 4), end-effector rotation and position SE(3)
         v = curState_EE[1]  # Tensor (1, 6), end-effector spatial velocity V_b
+
         # index = [3, 4, 5, 0, 1, 2]
         # v = v[index]
 
         R_inv = torch.inverse(tarState_EE)
+
         Htl = torch.matmul(R_inv, x)  # R_inv * X
+
         Xe = SE3.from_matrix(Htl, normalize=True)  # <cep.liegroups.torch.se3.SE3Matrix>, SE(3)
+        
         xtl = Xe.log()  # Tensor(1, 6), (omega, V)
+        
         vtl = -xtl
 
         A = SE3.from_matrix(tarState_EE)
