@@ -1,7 +1,7 @@
 import numpy as np
 
-from cep.utils import numpy2torch, torch2numpy
-from cep.liegroups.numpy import SO3, SE3
+from cep_.utils import numpy2torch, torch2numpy
+from cep_.liegroups.numpy import SO3, SE3
 
 def ControllSpeed_eef(T_target,T_body):
 

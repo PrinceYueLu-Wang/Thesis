@@ -55,7 +55,7 @@ class simualtion():
         self.dt=0.1
 
         # self.enable_pybullet=True
-        self.enable_pybullet=False
+        self.enable_pybullet=True
 
         self.eps=3*1e-3
 
@@ -223,7 +223,7 @@ class simualtion():
         
         # self.FieldList=[apf() for x in np.arange(0,7)]
 
-    def ForceFromField(self):
+    def FieldForce(self):
 
         statelist=self.robot.JointStateListUpdate()
 
@@ -396,7 +396,7 @@ class simualtion():
             # dq=dq+self.dt*ddq
             # q=q+dq*self.dt
 
-            dq=self.ForceFromField()
+            dq=self.FieldForce()
 
             # q=q+dq*self.dt
             q=q+dq*0.02
@@ -491,7 +491,7 @@ class simualtion():
                 
 def main():
 
-    sim=simualtion()
+    # sim=simualtion()
     #======================================================#
     # sim.StartSimDualshock()
 
@@ -535,14 +535,18 @@ def main():
     #             print("x={},y={},z={},res={}".format(x,y,z,flag))
     # sim.plot_data.Plot_x_EEF_world()
      #======================================================#
+    sim=simualtion()
+    sim.InitTarget([0.75579,  0,   1.296],[0, 0.7071068,  0,  0.7071068])
+    sim.StartSim()
+
 
 
 
     #======================================================#
-    print(sim.KinematicInv(
-        trans_target=[0.3, 0.0, 1.0],
-        quater=[0,0,-0.707,0.707]
-        ))
+    # print(sim.KinematicInv(
+    #     trans_target=[0.3, 0.0, 1.0],
+    #     quater=[0,0,-0.707,0.707]
+    #     ))
 
 
 if __name__ == '__main__':

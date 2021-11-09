@@ -9,8 +9,8 @@ import os
 from copy import deepcopy
 import matplotlib.pyplot as plt
 import time
-from cep.utils import numpy2torch, torch2numpy
-from cep.liegroups.torch import SO3, SE3
+from cep_.utils import numpy2torch, torch2numpy
+from cep_.liegroups.torch import SO3, SE3
 import cv2
 
 

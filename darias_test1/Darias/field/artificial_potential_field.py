@@ -114,12 +114,12 @@ class apf():
 
         # Target pose
         #======================================================#
-        target_position=[0.75579,   -0.12606,   1.296]
+        target_position=[0.3416293314810858, 0.07325080184151625, 0.7927640713190849]
         self.target_position = Vector3d(target_position[0],
                                    target_position[1],
                                    target_position[2])
 
-        target_orientation=[0.21194,   0.7567,  -0.18032,  0.59158]
+        target_orientation=[0.3413158146478187, -0.7258073988311992, 0.5007063135727924, -0.3255769064622509]
 
         quat=np.quaternion(target_orientation[3],target_orientation[0],
                            target_orientation[1],target_orientation[2])
@@ -136,7 +136,7 @@ class apf():
         #======================================================#
         obstacle=[0.62,   0.49,   1.52]  
         self.obstacle=Vector3d(obstacle[0],obstacle[1],obstacle[2])
-        self.obsRadius=0.5
+        self.obsRadius=0.05
 
         self.rr=self.obsRadius+0.05
 

@@ -57,21 +57,24 @@ class PyEnv():
         self.robotID = p.loadURDF(self.robotPath,startPos,startOrientation)
 
 
-        # startPos = [0, 0, 0]
-        # startOrientation = p.getQuaternionFromEuler([0, 0, 0])
-        # sphere_startPos = [0.5, -0.6, 1.8]
-        # sphere_startOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        startPos = [0, 0, 0]
+        startOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        sphere_startPos = [0.5, -0.6, 1.8]
+        sphere_startOrientation = p.getQuaternionFromEuler([0, 0, 0])
 
-        # SphereId = p.loadURDF(self.spherePath,sphere_startPos,sphere_startOrientation)
+        SphereId = p.loadURDF(self.spherePath,sphere_startPos,sphere_startOrientation)
 
-        # sphere_obstaclePos = [0.62,  0.49  ,  1.52]
-        # sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
-        # SphereObsId = p.loadURDF(
-        #     self.sphereObsPath,
-        #     basePosition=sphere_obstaclePos,
-        #     baseOrientation=sphere_obstacleOrientation,
-        #     useFixedBase=True
-        #     )
+        sphere_obstaclePos = [0.62,  0.49  ,  1.52]
+        sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        SphereObsId = p.loadURDF(
+            self.sphereObsPath,
+            basePosition=sphere_obstaclePos,
+            baseOrientation=sphere_obstacleOrientation,
+            useFixedBase=True
+            )
+    def AddSphereWall(self):
+        pass
+        
 
     def EndEffectorAxis(self):
         pass
