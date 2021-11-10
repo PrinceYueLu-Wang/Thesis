@@ -13,7 +13,8 @@ from Darias.controller import ControllSpeed_eef,LineContSpeed_eef
 from Darias.utils import DistHomoMatrix
 from Darias.utils import PlotData
 from Darias.envs import PyEnv
-from Darias.field import Vector3d,apf
+from Darias.field import apf
+from Darias.field import APF
 
 import numpy as np
 import quaternion
@@ -494,20 +495,25 @@ class simualtion():
 
     def StartSimAPF2(self):
 
+        apf_field = APF()
+
         q=deepcopy(self.robot.q_init)
         dq=np.zeros((7,))
         
         for iter in range(0,self.iteration_max):
 
             x=self.robot.GetJointState(self.jointidx_eef)
-            x_joints=self.robot.GetJointState(self.jointidx_eef)
+
             v=self.robot.VelocityWorld_eef()
-            dq1=self.FieldForce()
 
             v_des=ControllSpeed_eef(self.T_target_world,x)
-            dq2=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
-            
-            q=q+(dq1)*0.05
+
+            dq_att=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+
+            q_xyz = self.robot.GetJointsXYZ()
+
+            apf_field.UpdateJointState(q_xyz=q_xyz)
+            apf_field.UpdateAttForce(att_force=dq_att)
 
 
             self.SimulationStep(q)

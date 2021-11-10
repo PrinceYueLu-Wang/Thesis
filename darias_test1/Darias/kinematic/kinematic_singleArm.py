@@ -157,28 +157,21 @@ class Kinematic():
         elif return_type == "rotation":
 
             return rot
-    def GetJointStates(self,return_type='homo'):
 
-        for range
+    def GetJointsXYZ(self,joint_group='left',return_type='translation'):
 
-        rot=self.data.oMi[joint_idx].rotation
-        trans=self.data.oMi[joint_idx].translation
+        if joint_group == "left":
+            joint_idx=[1,2,3,4,5,6,7]
+        
+        trans_matrix = np.zeros(len(joint_idx),3)
 
-        if return_type == "homo":
-            
-            homoMatrix=np.eye(4)
-            homoMatrix[0:3,0:3]=rot
-            homoMatrix[0:3,-1]=trans
+        for i in joint_idx:
+            trans=self.data.oMi[i].translation.reshape(-1,3)
+            trans_matrix[i,:]=trans
 
-            return homoMatrix
+        return trans_matrix
 
-        elif return_type == "translation":
 
-            return trans
-
-        elif return_type == "rotation":
-
-            return rot
     def NeutralJointState(self):
         return pin.neutral(self.model)
 
