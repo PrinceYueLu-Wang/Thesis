@@ -55,7 +55,7 @@ class Kinematic():
 
     def JointPin2Bullet(self,jointIdx_pinocchio):
         iidx=self.jointIdx_pinocchio.index(jointIdx_pinocchio)
-        idx=self.jointIdx_pybullet[idx]
+        idx=self.jointIdx_pybullet[iidx]
         return idx
 
     def ModelInit(self,*args):
@@ -157,7 +157,28 @@ class Kinematic():
         elif return_type == "rotation":
 
             return rot
+    def GetJointStates(self,return_type='homo'):
 
+        for range
+
+        rot=self.data.oMi[joint_idx].rotation
+        trans=self.data.oMi[joint_idx].translation
+
+        if return_type == "homo":
+            
+            homoMatrix=np.eye(4)
+            homoMatrix[0:3,0:3]=rot
+            homoMatrix[0:3,-1]=trans
+
+            return homoMatrix
+
+        elif return_type == "translation":
+
+            return trans
+
+        elif return_type == "rotation":
+
+            return rot
     def NeutralJointState(self):
         return pin.neutral(self.model)
 

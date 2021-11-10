@@ -42,7 +42,8 @@ class simualtion():
         self.FieldInit()
 
         if self.enable_pybullet:
-            self.bullet=PyEnv()    
+            self.bullet=PyEnv()   
+            self.bullet.AddSphereWall()
 
     def ParameterConfig(self):
 
@@ -490,13 +491,47 @@ class simualtion():
                     else:
 
                         print("not in the list!")
-                
+
+    def StartSimAPF2(self):
+
+        q=deepcopy(self.robot.q_init)
+        dq=np.zeros((7,))
+        
+        for iter in range(0,self.iteration_max):
+
+            x=self.robot.GetJointState(self.jointidx_eef)
+            x_joints=self.robot.GetJointState(self.jointidx_eef)
+            v=self.robot.VelocityWorld_eef()
+            dq1=self.FieldForce()
+
+            v_des=ControllSpeed_eef(self.T_target_world,x)
+            dq2=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
+            
+            q=q+(dq1)*0.05
+
+
+            self.SimulationStep(q)
+            self.plot_data.DataUpdate(
+                q=q,dq=dq,
+                ddq=None,
+                x_EEF_world=x,
+                v_EEF_world=v,
+                time=iter*self.dt)
+
+            # error: euclidian distance between two Frame 
+            err=DistHomoMatrix(x,self.T_target_world)
+            print("{:*^30}".format('err'))
+            print(err)
+
+            if err < self.eps:
+                self.iteration_success=True
+                break          
 def main():
 
     sim=simualtion()
     sim.InitTarget([0.3416293314810858, 0.07325080184151625, 0.7927640713190849],[0.3413158146478187, -0.7258073988311992, 0.5007063135727924, -0.3255769064622509])
-    sim.StartSimAPF()   
-    # sim.StartSim()
+    # sim.StartSimAPF()   
+    sim.StartSim()
 
     sleep(10)
 

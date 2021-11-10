@@ -1,6 +1,7 @@
 
 import pybullet as p
 import pybullet_data
+import numpy as np
 from os.path import dirname, join, abspath
 from time import sleep
 
@@ -56,24 +57,41 @@ class PyEnv():
         startOrientation = p.getQuaternionFromEuler([0, 0, 0])
         self.robotID = p.loadURDF(self.robotPath,startPos,startOrientation)
 
+        # sphere_startPos = [0.5, -0.6, 1.8]
+        # sphere_startOrientation = p.getQuaternionFromEuler([0, 0, 0])
 
-        startPos = [0, 0, 0]
+        # SphereId = p.loadURDF(self.spherePath,sphere_startPos,sphere_startOrientation)
+
+        # sphere_obstaclePos = [0.62,  0.49  ,  1.52]
+        # sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        # SphereObsId = p.loadURDF(
+        #     self.sphereObsPath,
+        #     basePosition=sphere_obstaclePos,
+        #     baseOrientation=sphere_obstacleOrientation,
+        #     useFixedBase=True
+        #     )
+    def AddSphereWall(self):
+        x=1.0+ np.arange(-5,6)*0.1
+        z=1.42+ np.arange(-5,6)*0.1
+        y=0.54
+
+        sphere_wall=np.array(np.meshgrid(x,y,z)).T.reshape(-1,3)
+
+        # startPos = [0, 0, 0]
         startOrientation = p.getQuaternionFromEuler([0, 0, 0])
-        sphere_startPos = [0.5, -0.6, 1.8]
-        sphere_startOrientation = p.getQuaternionFromEuler([0, 0, 0])
+        SphereId=[]
+        
+        sphereObsPath=join(self.modelFolder,"sphere_0025m.urdf")
 
-        SphereId = p.loadURDF(self.spherePath,sphere_startPos,sphere_startOrientation)
+        for i in range(0,sphere_wall.shape[0]):
 
-        sphere_obstaclePos = [0.62,  0.49  ,  1.52]
-        sphere_obstacleOrientation = p.getQuaternionFromEuler([0, 0, 0])
-        SphereObsId = p.loadURDF(
-            self.sphereObsPath,
-            basePosition=sphere_obstaclePos,
-            baseOrientation=sphere_obstacleOrientation,
+            item = p.loadURDF(
+            sphereObsPath,
+            basePosition=sphere_wall[i,:],
+            baseOrientation=startOrientation,
             useFixedBase=True
             )
-    def AddSphereWall(self):
-        pass
+            
         
 
     def EndEffectorAxis(self):
