@@ -40,7 +40,7 @@ class simualtion():
 
         self.robot=Kinematic()
 
-        self.FieldInit()
+        # self.FieldInit()
 
         if self.enable_pybullet:
             self.bullet=PyEnv()   
@@ -390,11 +390,6 @@ class simualtion():
             x=self.robot.GetJointState(self.jointidx_eef)
             v=self.robot.VelocityWorld_eef()
 
-            # ddq=self.ForceFromField()
-
-            # dq=dq+self.dt*ddq
-            # q=q+dq*self.dt
-
             dq1=self.FieldForce()
 
             v_des=ControllSpeed_eef(self.T_target_world,x)
@@ -510,11 +505,16 @@ class simualtion():
 
             dq_att=np.matmul(self.robot.JacobWorldInv_eef(),v_des)
 
+            q_jInv = self.robot.GetJointsJacob()
             q_xyz = self.robot.GetJointsXYZ()
 
-            apf_field.UpdateJointState(q_xyz=q_xyz)
+            apf_field.UpdateJointState(q_xyz=q_xyz,q_jInv=q_jInv)
             apf_field.UpdateAttForce(att_force=dq_att)
+            apf_field.UpdateRepForce()
 
+            dq = apf_field.UpdateResForce()
+
+            q = q + dq *self.dt/2
 
             self.SimulationStep(q)
             self.plot_data.DataUpdate(
@@ -537,12 +537,8 @@ def main():
     sim=simualtion()
     sim.InitTarget([0.3416293314810858, 0.07325080184151625, 0.7927640713190849],[0.3413158146478187, -0.7258073988311992, 0.5007063135727924, -0.3255769064622509])
     # sim.StartSimAPF()   
-    sim.StartSim()
-
-    sleep(10)
-
-
-
+    # sim.StartSim()
+    sim.StartSimAPF2()
 
 if __name__ == '__main__':
     main()

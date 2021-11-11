@@ -163,14 +163,28 @@ class Kinematic():
         if joint_group == "left":
             joint_idx=[1,2,3,4,5,6,7]
         
-        trans_matrix = np.zeros(len(joint_idx),3)
+        trans_matrix = np.zeros(shape=(len(joint_idx),3))
 
-        for i in joint_idx:
-            trans=self.data.oMi[i].translation.reshape(-1,3)
+        for i in range(0,7):
+
+            trans=self.data.oMi[joint_idx[i]].translation.reshape(-1,3)
+
             trans_matrix[i,:]=trans
 
         return trans_matrix
 
+    def GetJointsJacob(self,joint_group='left'):
+
+        if joint_group == "left":
+            joint_idx=[1,2,3,4,5,6,7]
+
+        JInv_list=[]
+
+        for i in range(0,7):
+
+            JInv_list.append(self.JacobWorldInv(joint_idx[i]))
+
+        return JInv_list
 
     def NeutralJointState(self):
         return pin.neutral(self.model)

@@ -19,14 +19,11 @@ class APF():
     def ParameterConfig(self):
 
         ##===========================#
-
         self.joint_num=7
-
-
         ##===========================#
 
         self.k_att = 1.0
-        self.k_rep = 10.0
+        self.k_rep = 0.05
 
         self.step_size = 1
 
@@ -60,9 +57,11 @@ class APF():
         self.obstacle_radius = np.ones((self.obstacle_num,)) * 0.025
         
     
-    def UpdateJointState(self,q_xyz):
+    def UpdateJointState(self,q_xyz,q_jInv):
 
         self.joints_xyz=q_xyz
+
+        self.joints_jacobInv=q_jInv
         
         self.dist_matrix=self.DistanceCalculate(q_xyz,self.obs_spherecenter)
 
@@ -73,81 +72,129 @@ class APF():
     def UpdateAttForce(self,att_force):
         self.att_force = att_force
 
+    # def UpdateRepForce(self):
+
+        # #=================#
+        # #find 10 closest point to 7 joints
+        # #if input less than 10 , then input size
+        
+        # rank = min(self.obstacle_num,10)
+
+        # #每行前10小
+
+        # selector_index = np.argpartition(self.dist_matrix,
+        #                            kth=rank,
+        #                            axis=1)[:,:rank]
+
+        
+        # selector=[[] for x in range(0,self.obstacle_num)]
+
+        # for i in range(0,7):
+            
+        #     #  selector_index 7x10
+        #     #  selected_idx 10,
+        #     selected_idx=selector_index[i,:]
+
+        #     selected_dist=self.dist_matrix[i,selected_idx]
+
+        #     dist_filter=np.argwhere(selected_dist<=0.05).reshape(-1)
+        
+        #     if dist_filter.size:
+
+        #         selected_idx = selected_idx[dist_filter]
+
+        #         selector[i] = self.obs_spherecenter[selected_idx,:]
+
+        # for i in range(0,7):
+
+        #     # 先看是不是空list
+        #     if selector[i]:
+
+        #         # selected_mat 10*3
+        #         selected_mat=self.obs_spherecenter[selected_idx,:]
+
+        #         selected_mat=np.argwhere(selected_mat<self.activate_threshold)
+
+        #         selector[i] = self.obs_spherecenter[:,3]
+
+        # self.joints_force=np.zeros(7,3)
+
+        # for i in range(0,7):
+
+        #     # self.joints_xyz[i] with size 3x1
+        #     # selector[i] with size nx3 e.g. 10x3
+
+        #     vec = self.joints_xyz[i]-selector[i]
+
+        #     vec = np.sum(vec,axis=0)
+
+        #     vec = np.linalg.norm(vec)
+
+        #     vec = 
+
     def UpdateRepForce(self):
 
-        #=================#
-        #find 10 closest point to 7 joints
-        #if input less than 10 , then input size
+        self.rr = 0.1
 
+        idx_min = np.argmin(self.dist_matrix,axis=1)
+        dist_min = np.min(self.dist_matrix,axis=1)
 
-        
-        rank = min(self.obstacle_num,10)
-
-        #每行前10小
-
-        selector_index = np.argpartition(self.dist_matrix,
-                                   kth=rank,
-                                   axis=1)[:,:rank]
-
-        
-        selector=[[] for x in range(0,self.obstacle_num)]
+        dq_matrix = np.zeros(shape=(7,7))
 
         for i in range(0,7):
             
-            #  selector_index 7x10
-            #  selected_idx 10,
-            selected_idx=selector_index[i,:]
+            selected_idx = idx_min[i]
+            selected_dist = dist_min[i]
 
-            selected_dist=self.dist_matrix[i,selected_idx]
+            if selected_dist < 0.05:
 
-            dist_filter=np.argwhere(selected_dist<=0.05).reshape(-1)
+                vec_diff =self.obs_spherecenter[selected_idx,:]-self.joints_xyz[i,:]
 
-            # 先看是不是空list
-            if dist_filter.size:
+                force_vec = np.linalg.norm(vec_diff)
 
-                selected_idx = selected_idx[dist_filter]
+                force_vec =  vec_diff / force_vec
 
-                selector[i] = self.obs_spherecenter[selected_idx,:]
+                force_amp = self.k_rep*(1.0/selected_dist-1.0/self.rr)
 
-        for i in range(0,7):
+                force_rep = force_vec*force_amp
 
-            # 先看是不是空list
-            if selector[i]:
+            else:
 
-                
+                force_rep = np.array([0,0,0])
 
+            dx_tmp = np.zeros(shape=(6,1))
 
+            dx_tmp[:3] = force_rep.reshape(3,1)
 
+            # dx_tmp -> size : 6x1
+            # dq_tmp -> size : 7x6 * 6x1 = 7x1
 
+            dq_tmp = np.matmul(self.joints_jacobInv[i],dx_tmp)
 
-            
+            # each row is for one joint 
 
-
-
-
-            
-            
-            
-            # selected_mat 10*3
-            selected_mat=self.obs_spherecenter[selected_idx,:]
+            dq_matrix[i,:] = dq_tmp.reshape(1,7)
 
 
+        ## sum of dq based on repulsive forece
 
-            selected_mat=np.argwhere(selected_mat<self.activate_threshold)
+        # sum along column
+
+        # dq_repForce -> size : 1 * 7
+        dq_repForce = np.sum(dq_matrix,axis=0)
+
+        dq_repForce = dq_repForce
+
+        self.rep_force = dq_repForce
 
 
+    def UpdateResForce(self):
+        
+        res_force = self.rep_force + self.att_force
 
+        return res_force.reshape(7,)
 
-
-
-
-            selector[i] = self.obs_spherecenter[:,3]
-
-
-    def UpdateResForce():
-        pass
-
-    def DistanceCalculate(X,Y):
+    def DistanceCalculate(self,X,Y):
 
         # X [m,k]  Y [n,k]
         # return res[m,n]  
